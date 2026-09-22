@@ -1,15 +1,14 @@
-# Pertemuan 04 Seleksi Multi-Kondisi dan Validasi Input
+`# Pertemuan 04 Seleksi Multi-Kondisi dan Validasi Input
 
-Nama: Rohelis
-NIM: 2225250064
-Kelas: 3B
+**Nama:** Rohelis
+**NIM:** 2225250064
+**Kelas:** 3B
 
 ## Tujuan
-Membangun program validasi dan klasifikasi dengan rantai `if-elif-else` serta penanganan penolakan input (*error handling*) yang memadai.
+Membangun program validasi dan klasifikasi dengan rantai `if-elif-else` untuk mengevaluasi input berdasar banyak kondisi (tipe data, rentang nilai, dan bobot penilaian) secara terstruktur tanpa adanya tumpang tindih logika.
 
 ## Cara Menjalankan
-```bash
-python3 praktik/validasi_klasifikasi_nilai.py
+Jalankan program melalui terminal atau *command prompt* dengan mengeksekusi file Python berikut:
 
 ## Tabel Keputusan
 
@@ -40,8 +39,25 @@ python3 praktik/validasi_klasifikasi_nilai.py
 
 ## Refleksi
 
-Masukan tidak valid yang semula terlewat adalah saat pengguna memasukkan angka desimal menggunakan tanda koma (misalnya `"49,9"` alih-alih `"49.9"`), yang menyebabkan kegagalan konversi tipe data (`ValueError`) pada fungsi `float()`.
+Dalam pengembangan program ini, satu skenario masukan tidak valid yang pada awalnya terlewat oleh saya adalah **kemungkinan pengguna memasukkan tipe data yang tidak sesuai**, seperti huruf alfabet (contoh: `"A"` atau `"Lulus"`), membiarkan input kosong (hanya menekan *Enter*), atau tidak sengaja menyisipkan spasi berlebih (contoh: `" 85  "`).
 
-Untuk menanganinya:
-1. Menggunakan pemanggilan metode `.strip()` untuk membersihkan spasi yang tidak sengaja terketik di awal atau akhir input.
-2. Menggunakan struktur penanganan pengecualian `try-except ValueError` agar setiap input yang bukan berupa angka valid dapat ditangkap dengan baik dan menampilkan pesan peringatan tanpa menyebabkan program terhenti secara mendadak (*crash*).
+**Analisis Masalah (Penyebab Crash):**
+Pada rancangan awal, fokus logika program saya hanya terpusat pada validasi rentang angka (misalnya `if nilai < 0 or nilai > 100:`). Saya membangun asumsi bahwa pengguna akan selalu memasukkan format angka dengan benar. Akibatnya, ketika pengguna memasukkan karakter non-angka, fungsi `float()` pada Python gagal melakukan konversi (*type casting*) dari tipe data *string* menjadi *float*. 
+
+Kegagalan ini memicu *runtime error* berupa `ValueError`, yang menyebabkan program hancur (*crash*) seketika dan berhenti bekerja. Dari segi pengalaman pengguna (*user experience*), hal ini sangat fatal karena sistem berhenti secara paksa tanpa memberikan petunjuk yang ramah kepada pengguna tentang apa kesalahan mereka.
+
+**Cara Menanganinya (Pendekatan Pemrograman Defensif):**
+Untuk mengatasi celah tersebut dan membuat program menjadi lebih tangguh (*robust*), saya mengimplementasikan dua lapis keamanan:
+
+1. **Pembersihan Data (*Data Sanitization*) dengan `.strip()`:** 
+   Saya menambahkan *method* `.strip()` di setiap pemanggilan fungsi `input()`. Langkah ini berfungsi untuk memotong atau membuang spasi kosong di awal maupun di akhir teks yang mungkin tidak sengaja terketik. Dengan ini, input seperti `" 90  "` akan dibersihkan menjadi `"90"` sebelum diproses ke tahap selanjutnya.
+
+2. **Penanganan Pengecualian (*Exception Handling*) dengan `try-except`:** 
+   Untuk mencegah program berhenti paksa akibat huruf/teks kosong, saya membungkus proses konversi nilai (dari teks ke `float`) ke dalam blok pelindung `try`. Jika konversi gagal dan memicu `ValueError`, sistem tidak akan *crash*. Alih-alih hancur, aliran program akan ditangkap oleh blok `except ValueError` dan secara elegan menampilkan pesan *error* yang telah saya sesuaikan: *"Masukan ditolak: seluruh data harus berupa angka."*
+
+**Kesimpulan Pembelajaran:**
+Melalui studi kasus ini, saya menyadari bahwa dalam membangun sebuah algoritma, kita harus mempraktikkan *Defensive Programming*. Kita tidak boleh sepenuhnya mempercayai input dari pengguna. Validasi tidak hanya sebatas memeriksa batasan logika bisnis (seperti nilai 0-100), tetapi juga wajib memeriksa integritas tipe data sejak data tersebut pertama kali masuk ke dalam sistem.
+
+
+```bash
+python3 praktik/validasi_klasifikasi_nilai.py
